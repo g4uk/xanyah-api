@@ -48,6 +48,12 @@
     },
     "SMTP_PORT": {
       "required": true
+    },
+    "STRIPE_PUBLISHABLE_KEY": {
+      "required": true
+    },
+    "STRIPE_SECRET_KEY": {
+      "required": true
     }
   },
   "formation": {

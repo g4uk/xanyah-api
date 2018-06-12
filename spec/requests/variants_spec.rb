@@ -11,13 +11,13 @@ RSpec.describe 'Variants', type: :request do
     it 'returns only permitted variants' do
       create(:variant)
       create(:variant, product: create(:product, store: store))
-      get variants_path, headers: user.create_new_auth_token
+      get variants_path, params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(1)
     end
 
     it 'return empty if !membership' do
-      get variants_path, headers: create(:user).create_new_auth_token
+      get variants_path, params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(0)
     end
@@ -31,13 +31,13 @@ RSpec.describe 'Variants', type: :request do
   describe 'GET /variants/:id' do
     it 'returns variant if membership' do
       variant = create(:variant, product: create(:product, store: store))
-      get variant_path(variant), headers: user.create_new_auth_token
+      get variant_path(variant), params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)['id']).to be_present
     end
 
     it 'returns 401 if !membership' do
-      get variant_path(create(:variant)), headers: create(:user).create_new_auth_token
+      get variant_path(create(:variant)), params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 

@@ -11,13 +11,13 @@ RSpec.describe 'VariantAttributes', type: :request do
     it 'returns only permitted variant_attributes' do
       create(:variant_attribute)
       create(:variant_attribute, variant: create(:variant, product: create(:product, store: store)))
-      get variant_attributes_path, headers: user.create_new_auth_token
+      get variant_attributes_path, params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(1)
     end
 
     it 'return empty if !membership' do
-      get variant_attributes_path, headers: create(:user).create_new_auth_token
+      get variant_attributes_path, params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(0)
     end
@@ -34,13 +34,13 @@ RSpec.describe 'VariantAttributes', type: :request do
         :variant_attribute,
         variant: create(:variant, product: create(:product, store: store))
       )
-      get variant_attribute_path(variant_attribute), headers: user.create_new_auth_token
+      get variant_attribute_path(variant_attribute), params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)['id']).to be_present
     end
 
     it 'returns 401 if !membership' do
-      get variant_attribute_path(create(:variant_attribute)), headers: create(:user).create_new_auth_token
+      get variant_attribute_path(create(:variant_attribute)), params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 

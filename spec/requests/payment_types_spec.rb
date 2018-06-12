@@ -11,13 +11,13 @@ RSpec.describe 'Categories', type: :request do
     it 'returns only permitted payment_types' do
       create(:payment_type)
       create(:payment_type, store: store)
-      get payment_types_path, headers: user.create_new_auth_token
+      get payment_types_path, params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(1)
     end
 
     it 'return empty if !membership' do
-      get payment_types_path, headers: create(:user).create_new_auth_token
+      get payment_types_path, params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(0)
     end
@@ -31,13 +31,13 @@ RSpec.describe 'Categories', type: :request do
   describe 'GET /payment_types/:id' do
     it 'returns payment_type if membership' do
       payment_type = create(:payment_type, store: store)
-      get payment_type_path(payment_type), headers: user.create_new_auth_token
+      get payment_type_path(payment_type), params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)['id']).to be_present
     end
 
     it 'returns 401 if !membership' do
-      get payment_type_path(create(:payment_type)), headers: create(:user).create_new_auth_token
+      get payment_type_path(create(:payment_type)), params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 

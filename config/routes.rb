@@ -30,6 +30,8 @@ Rails.application.routes.draw do
 
   resources :payment_types, except: [:destroy]
 
+  resources :plans, only: :index
+
   resources :products, except: [:destroy]
 
   resources :providers, except: [:destroy] do
@@ -50,6 +52,8 @@ Rails.application.routes.draw do
 
   resources :store_memberships
   resources :stores, except: [:destroy]
+
+  resources :subscriptions
 
   resources :variant_attributes
   resources :variants, except: [:destroy] do

@@ -11,13 +11,13 @@ RSpec.describe 'CustomAttributes', type: :request do
     it 'returns only permitted custom_attributes' do
       create(:custom_attribute)
       create(:custom_attribute, store: store)
-      get custom_attributes_path, headers: user.create_new_auth_token
+      get custom_attributes_path, params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(1)
     end
 
     it 'return empty if !membership' do
-      get custom_attributes_path, headers: create(:user).create_new_auth_token
+      get custom_attributes_path, params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(0)
     end
@@ -31,13 +31,13 @@ RSpec.describe 'CustomAttributes', type: :request do
   describe 'GET /custom_attributes/:id' do
     it 'returns custom_attribute if membership' do
       custom_attribute = create(:custom_attribute, store: store)
-      get custom_attribute_path(custom_attribute), headers: user.create_new_auth_token
+      get custom_attribute_path(custom_attribute), params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)['id']).to be_present
     end
 
     it 'returns 401 if !membership' do
-      get custom_attribute_path(create(:custom_attribute)), headers: create(:user).create_new_auth_token
+      get custom_attribute_path(create(:custom_attribute)), params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 

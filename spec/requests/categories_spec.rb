@@ -11,13 +11,13 @@ RSpec.describe 'Categories', type: :request do
     it 'returns only permitted categories' do
       create(:category)
       create(:category, store: store)
-      get categories_path, headers: user.create_new_auth_token
+      get categories_path, params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(1)
     end
 
     it 'return empty if !membership' do
-      get categories_path, headers: create(:user).create_new_auth_token
+      get categories_path, params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(0)
     end
@@ -31,13 +31,13 @@ RSpec.describe 'Categories', type: :request do
   describe 'GET /categories/:id' do
     it 'returns category if membership' do
       category = create(:category, store: store)
-      get category_path(category), headers: user.create_new_auth_token
+      get category_path(category), params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)['id']).to be_present
     end
 
     it 'returns 401 if !membership' do
-      get category_path(create(:category)), headers: create(:user).create_new_auth_token
+      get category_path(create(:category)), params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 

@@ -11,13 +11,13 @@ RSpec.describe 'StockBackupVariants', type: :request do
     it 'returns only permitted stock_backup_variants' do
       create(:stock_backup_variant)
       create(:stock_backup_variant, stock_backup: create(:stock_backup, store: store))
-      get stock_backup_variants_path, headers: user.create_new_auth_token
+      get stock_backup_variants_path, params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(1)
     end
 
     it 'return empty if !membership' do
-      get stock_backup_variants_path, headers: create(:user).create_new_auth_token
+      get stock_backup_variants_path, params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(0)
     end
@@ -31,13 +31,14 @@ RSpec.describe 'StockBackupVariants', type: :request do
   describe 'GET /stock_backup_variants/:id' do
     it 'returns stock_backup_variant if membership' do
       stock_backup_variant = create(:stock_backup_variant, stock_backup: create(:stock_backup, store: store))
-      get stock_backup_variant_path(stock_backup_variant), headers: user.create_new_auth_token
+      get stock_backup_variant_path(stock_backup_variant), params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)['id']).to be_present
     end
 
     it 'returns 401 if !membership' do
-      get stock_backup_variant_path(create(:stock_backup_variant)), headers: create(:user).create_new_auth_token
+      get stock_backup_variant_path(create(:stock_backup_variant)),
+          params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 

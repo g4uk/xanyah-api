@@ -11,13 +11,13 @@ RSpec.describe 'Manufacturers', type: :request do
     it 'returns only permitted manufacturers' do
       create(:manufacturer)
       create(:manufacturer, store: store)
-      get manufacturers_path, headers: user.create_new_auth_token
+      get manufacturers_path, params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(1)
     end
 
     it 'return empty if !membership' do
-      get manufacturers_path, headers: create(:user).create_new_auth_token
+      get manufacturers_path, params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(0)
     end
@@ -31,13 +31,13 @@ RSpec.describe 'Manufacturers', type: :request do
   describe 'GET /manufacturers/:id' do
     it 'returns manufacturer if membership' do
       manufacturer = create(:manufacturer, store: store)
-      get manufacturer_path(manufacturer), headers: user.create_new_auth_token
+      get manufacturer_path(manufacturer), params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)['id']).to be_present
     end
 
     it 'returns 401 if !membership' do
-      get manufacturer_path(create(:manufacturer)), headers: create(:user).create_new_auth_token
+      get manufacturer_path(create(:manufacturer)), params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 

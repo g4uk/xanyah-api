@@ -11,13 +11,13 @@ RSpec.describe 'Inventories', type: :request do
     it 'returns only permitted inventories' do
       create(:inventory)
       create(:inventory, store: store)
-      get inventories_path, headers: user.create_new_auth_token
+      get inventories_path, params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(1)
     end
 
     it 'return empty if !membership' do
-      get inventories_path, headers: create(:user).create_new_auth_token
+      get inventories_path, params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(0)
     end
@@ -31,13 +31,13 @@ RSpec.describe 'Inventories', type: :request do
   describe 'GET /inventories/:id' do
     it 'returns inventory if membership' do
       inventory = create(:inventory, store: store)
-      get inventory_path(inventory), headers: user.create_new_auth_token
+      get inventory_path(inventory), params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)['id']).to be_present
     end
 
     it 'returns 401 if !membership' do
-      get inventory_path(create(:inventory)), headers: create(:user).create_new_auth_token
+      get inventory_path(create(:inventory)), params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 
@@ -52,13 +52,13 @@ RSpec.describe 'Inventories', type: :request do
     it 'updates inventory if membership' do
       store_membership.update(role: :admin)
       inventory = create(:inventory, store: store, locked_at: nil)
-      patch lock_inventory_path(inventory), headers: user.create_new_auth_token
+      patch lock_inventory_path(inventory), params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)['locked_at']).not_to eq(nil)
     end
 
     it 'returns 401 if !membership' do
-      patch lock_inventory_path(create(:inventory)), headers: create(:user).create_new_auth_token
+      patch lock_inventory_path(create(:inventory)), params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 
@@ -73,14 +73,14 @@ RSpec.describe 'Inventories', type: :request do
     it 'deletes inventory variant if membership >= admin' do
       store_membership.update(role: :admin)
       inventory = create(:inventory, store: store, locked_at: nil)
-      delete inventory_path(inventory), headers: store_membership.user.create_new_auth_token
+      delete inventory_path(inventory), params: {headers: store_membership.user.create_new_auth_token}
       expect(response).to have_http_status(:no_content)
     end
 
     it 'returns 401 if membership < admin' do
       store_membership.update(role: :regular)
       inventory = create(:inventory, store: store, locked_at: nil)
-      delete inventory_path(inventory), headers: store_membership.user.create_new_auth_token
+      delete inventory_path(inventory), params: {headers: store_membership.user.create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 
@@ -88,12 +88,12 @@ RSpec.describe 'Inventories', type: :request do
       store_membership.update(role: :admin)
       inventory = create(:inventory, store: store, locked_at: nil)
       inventory.lock
-      delete inventory_path(inventory), headers: store_membership.user.create_new_auth_token
+      delete inventory_path(inventory), params: {headers: store_membership.user.create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 
     it 'returns 401 if !membership' do
-      delete inventory_path(create(:inventory)), headers: create(:user).create_new_auth_token
+      delete inventory_path(create(:inventory)), params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
       expect(JSON.parse(response.body)).to have_key('errors')
     end

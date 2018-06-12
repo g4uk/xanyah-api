@@ -7,13 +7,13 @@ RSpec.describe 'StoreMemberships', type: :request do
     it 'returns only permitted memberships' do
       membership = create(:store_membership)
       create(:store_membership)
-      get store_memberships_path, headers: membership.user.create_new_auth_token
+      get store_memberships_path, params: {headers: membership.user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(1)
     end
 
     it 'returns empty if !membership' do
-      get store_memberships_path, headers: create(:user).create_new_auth_token
+      get store_memberships_path, params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(0)
     end
@@ -27,13 +27,13 @@ RSpec.describe 'StoreMemberships', type: :request do
   describe 'GET /store_memberships/:id' do
     it 'returns store if membership' do
       membership = create(:store_membership)
-      get store_membership_path(membership), headers: membership.user.create_new_auth_token
+      get store_membership_path(membership), params: {headers: membership.user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)['id']).to be_present
     end
 
     it 'returns 401 if !membership' do
-      get store_membership_path(create(:store_membership)), headers: create(:user).create_new_auth_token
+      get store_membership_path(create(:store_membership)), params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 
@@ -84,20 +84,20 @@ RSpec.describe 'StoreMemberships', type: :request do
     it 'deletes membership if membership >= admin' do
       membership = create(:store_membership, role: :admin)
       new_membership = create(:store_membership, store: membership.store, role: :regular)
-      delete store_membership_path(new_membership), headers: membership.user.create_new_auth_token
+      delete store_membership_path(new_membership), params: {headers: membership.user.create_new_auth_token}
       expect(response).to have_http_status(:no_content)
     end
 
     it 'returns 401 if membership < admin' do
       membership = create(:store_membership, role: :regular)
       new_membership = create(:store_membership, store: membership.store)
-      delete store_membership_path(new_membership), headers: membership.user.create_new_auth_token
+      delete store_membership_path(new_membership), params: {headers: membership.user.create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
       expect(JSON.parse(response.body)).to have_key('errors')
     end
 
     it 'returns 401 if !membership' do
-      delete store_membership_path(create(:store_membership)), headers: create(:user).create_new_auth_token
+      delete store_membership_path(create(:store_membership)), params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
       expect(JSON.parse(response.body)).to have_key('errors')
     end

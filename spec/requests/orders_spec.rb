@@ -11,13 +11,13 @@ RSpec.describe 'Orders', type: :request do
     it 'returns only permitted orders' do
       create(:order)
       create(:order, store: store)
-      get orders_path, headers: user.create_new_auth_token
+      get orders_path, params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(1)
     end
 
     it 'returns empty if !membership' do
-      get orders_path, headers: create(:user).create_new_auth_token
+      get orders_path, params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(0)
     end
@@ -74,13 +74,13 @@ RSpec.describe 'Orders', type: :request do
   describe 'GET /orders/:id' do
     it 'returns order if membership' do
       order = create(:order, store: store)
-      get order_path(order), headers: user.create_new_auth_token
+      get order_path(order), params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)['id']).to be_present
     end
 
     it 'returns 401 if !membership' do
-      get order_path(create(:order)), headers: create(:user).create_new_auth_token
+      get order_path(create(:order)), params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 

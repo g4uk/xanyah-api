@@ -19,9 +19,11 @@ gem 'aws-sdk-s3', '~> 1'
 gem 'cancancan', '~> 2.0'
 gem 'devise_token_auth', '0.1.42'
 gem 'faker', github: 'stympy/faker'
+gem 'money-rails', '~>1'
 gem 'rack-cors'
 gem 'redis-namespace'
 gem 'sidekiq'
+gem 'stripe'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

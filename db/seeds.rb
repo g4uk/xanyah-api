@@ -2,6 +2,44 @@
 
 Rake::Task['vat_rates:update'].invoke
 
+puts 'Creating plans'
+
+Plan.create!(
+  gateway_id:    :free,
+  monthly_price: 0,
+  yearly_price:  0,
+  status:        :active,
+  max_users:     2,
+  max_variants:  500
+)
+
+Plan.create!(
+  gateway_id:    :basic,
+  monthly_price: 5,
+  yearly_price:  50,
+  status:        :active,
+  max_users:     5,
+  max_variants:  1000
+)
+
+Plan.create!(
+  gateway_id:    :gold,
+  monthly_price: 10,
+  yearly_price:  100,
+  status:        :active,
+  max_users:     10,
+  max_variants:  10_000
+)
+
+Plan.create!(
+  gateway_id:    :diamond,
+  monthly_price: 50,
+  yearly_price:  500,
+  status:        :active,
+  max_users:     0,
+  max_variants:  0
+)
+
 puts 'Creating users'
 
 owner_user = User.create!(
@@ -40,6 +78,13 @@ demo_store = Store.create!(
   country: 'FR',
   key:     store_name.to_slug
 )
+
+stripe_customer = Stripe::Customer.create(
+  description: demo_store.name,
+  email:       owner_user.email
+)
+
+demo_storestore.update(gateway_customer_id: stripe_customer.id)
 
 puts 'Creating store membership'
 

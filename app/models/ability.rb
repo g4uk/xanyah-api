@@ -20,6 +20,7 @@ class Ability
   include StockBackupVariantAbility
   include StoreAbility
   include StoreMembershipAbility
+  include SubscriptionAbility
   include VariantAbility
   include VariantAttributeAbility
 
@@ -46,6 +47,7 @@ class Ability
     stock_backup_variant_ability user
     store_ability user
     store_membership_ability user
+    subscription_ability user
     variant_ability user
     variant_attribute_ability user
   end

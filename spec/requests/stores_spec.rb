@@ -7,13 +7,13 @@ RSpec.describe 'Stores', type: :request do
     it 'returns only permitted stores' do
       membership = create(:store_membership)
       create(:store)
-      get stores_path, headers: membership.user.create_new_auth_token
+      get stores_path, params: {headers: membership.user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(1)
     end
 
     it 'returns empty if !membership' do
-      get stores_path, headers: create(:user).create_new_auth_token
+      get stores_path, params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(0)
     end
@@ -27,13 +27,13 @@ RSpec.describe 'Stores', type: :request do
   describe 'GET /stores/:id' do
     it 'returns store if membership' do
       membership = create(:store_membership)
-      get store_path(membership.store), headers: membership.user.create_new_auth_token
+      get store_path(membership.store), params: {headers: membership.user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)['id']).to be_present
     end
 
     it 'returns 401 if !membership' do
-      get store_path(create(:store)), headers: create(:user).create_new_auth_token
+      get store_path(create(:store)), params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 

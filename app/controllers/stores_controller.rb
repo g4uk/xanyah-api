@@ -19,6 +19,11 @@ class StoresController < ApplicationController
   def create
     if @store.save
       StoreMembership.create(user: current_user, store: @store)
+      stripe_customer = Stripe::Customer.create(
+        description: @store.name,
+        email:       current_user.email
+      )
+      @store.update(gateway_customer_id: stripe_customer.id)
       render json: @store, status: :created
     else
       render json: @store.errors, status: :unprocessable_entity

@@ -30,5 +30,5 @@ class Store < ApplicationRecord
   validates :key, presence: true, uniqueness: true, allow_nil: false
   validates :name, presence: true
 
-  before_validation { self.country = country.nil? ? '' : country.upcase }
+  before_validation { self.country = (country.nil? ? '' : country.upcase) }
 end

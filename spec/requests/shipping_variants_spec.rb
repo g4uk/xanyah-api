@@ -13,13 +13,13 @@ RSpec.describe 'ShippingVariants', type: :request do
       create(:shipping_variant,
              variant:  create(:variant, product: create(:product, store: store)),
              shipping: create(:shipping, store: store, locked_at: nil))
-      get shipping_variants_path, headers: user.create_new_auth_token
+      get shipping_variants_path, params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(1)
     end
 
     it 'return empty if !membership' do
-      get shipping_variants_path, headers: create(:user).create_new_auth_token
+      get shipping_variants_path, params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(0)
     end
@@ -35,13 +35,13 @@ RSpec.describe 'ShippingVariants', type: :request do
       shipping_variant = create(:shipping_variant,
                                 variant:  create(:variant, product: create(:product, store: store)),
                                 shipping: create(:shipping, store: store, locked_at: nil))
-      get shipping_variant_path(shipping_variant), headers: user.create_new_auth_token
+      get shipping_variant_path(shipping_variant), params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)['id']).to be_present
     end
 
     it 'returns 401 if !membership' do
-      get shipping_variant_path(create(:shipping_variant)), headers: create(:user).create_new_auth_token
+      get shipping_variant_path(create(:shipping_variant)), params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 
@@ -58,7 +58,7 @@ RSpec.describe 'ShippingVariants', type: :request do
                                 variant:  create(:variant, product: create(:product, store: store)),
                                 shipping: create(:shipping, store: store, locked_at: nil))
       get "/shipping_variants/#{shipping_variant.shipping_id}/#{shipping_variant.variant_id}",
-          headers: user.create_new_auth_token
+          params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)['id']).to be_present
     end
@@ -66,7 +66,7 @@ RSpec.describe 'ShippingVariants', type: :request do
     it 'returns 401 if !membership' do
       shipping_variant = create(:shipping_variant)
       get "/shipping_variants/#{shipping_variant.shipping_id}/#{shipping_variant.variant_id}",
-          headers: create(:user).create_new_auth_token
+          params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 
@@ -93,7 +93,7 @@ RSpec.describe 'ShippingVariants', type: :request do
     end
 
     it 'returns 401 if !membership' do
-      patch shipping_variant_path(create(:shipping_variant)), headers: create(:user).create_new_auth_token
+      patch shipping_variant_path(create(:shipping_variant)), params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 
@@ -108,12 +108,12 @@ RSpec.describe 'ShippingVariants', type: :request do
         shipping_variant = create(:shipping_variant,
                                   variant:  create(:variant, product: create(:product, store: store)),
                                   shipping: create(:shipping, store: store, locked_at: nil))
-        delete shipping_variant_path(shipping_variant), headers: store_membership.user.create_new_auth_token
+        delete shipping_variant_path(shipping_variant), params: {headers: store_membership.user.create_new_auth_token}
         expect(response).to have_http_status(:no_content)
       end
 
       it 'returns 401 if !membership' do
-        delete shipping_variant_path(create(:shipping_variant)), headers: create(:user).create_new_auth_token
+        delete shipping_variant_path(create(:shipping_variant)), params: {headers: create(:user).create_new_auth_token}
         expect(response).to have_http_status(:unauthorized)
         expect(JSON.parse(response.body)).to have_key('errors')
       end

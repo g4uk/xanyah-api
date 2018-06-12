@@ -11,7 +11,7 @@ RSpec.describe 'Sales', type: :request do
     it 'returns only permitted sales' do
       create(:sale)
       create(:sale, store: store)
-      get sales_path, headers: user.create_new_auth_token
+      get sales_path, params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(1)
     end
@@ -19,13 +19,13 @@ RSpec.describe 'Sales', type: :request do
     it 'filters by variant' do
       sale_variant = create(:sale_variant, sale: create(:sale, store: store))
       create(:sale_variant, sale: create(:sale, store: store))
-      get sales_path(variant_id: sale_variant.variant_id), headers: user.create_new_auth_token
+      get sales_path(variant_id: sale_variant.variant_id), params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(1)
     end
 
     it 'returns empty if !membership' do
-      get sales_path, headers: create(:user).create_new_auth_token
+      get sales_path, params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(0)
     end
@@ -104,13 +104,13 @@ RSpec.describe 'Sales', type: :request do
   describe 'GET /sales/:id' do
     it 'returns sale if membership' do
       sale = create(:sale, store: store)
-      get sale_path(sale), headers: user.create_new_auth_token
+      get sale_path(sale), params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)['id']).to be_present
     end
 
     it 'returns 401 if !membership' do
-      get sale_path(create(:sale)), headers: create(:user).create_new_auth_token
+      get sale_path(create(:sale)), params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 

@@ -11,7 +11,7 @@ RSpec.describe 'Products', type: :request do
     it 'returns only permitted products' do
       create(:product)
       create(:product, store: store)
-      get products_path, headers: user.create_new_auth_token
+      get products_path, params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(1)
     end
@@ -19,7 +19,7 @@ RSpec.describe 'Products', type: :request do
     it 'filters by manufacturer' do
       p = create(:product, store: store)
       create(:product, store: store)
-      get products_path(manufacturer_id: p.manufacturer_id), headers: user.create_new_auth_token
+      get products_path(manufacturer_id: p.manufacturer_id), params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       body = JSON.parse(response.body)
       expect(body.size).to eq(1)
@@ -29,7 +29,7 @@ RSpec.describe 'Products', type: :request do
     it 'filters by provider' do
       v = create(:variant, product: create(:product, store: store))
       create(:variant, product: create(:product, store: store))
-      get products_path(provider_id: v.provider_id), headers: user.create_new_auth_token
+      get products_path(provider_id: v.provider_id), params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       body = JSON.parse(response.body)
       expect(body.size).to eq(1)
@@ -37,7 +37,7 @@ RSpec.describe 'Products', type: :request do
     end
 
     it 'return empty if !membership' do
-      get products_path, headers: create(:user).create_new_auth_token
+      get products_path, params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(0)
     end
@@ -51,13 +51,13 @@ RSpec.describe 'Products', type: :request do
   describe 'GET /products/:id' do
     it 'returns product if membership' do
       product = create(:product, store: store)
-      get product_path(product), headers: user.create_new_auth_token
+      get product_path(product), params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)['id']).to be_present
     end
 
     it 'returns 401 if !membership' do
-      get product_path(create(:product)), headers: create(:user).create_new_auth_token
+      get product_path(create(:product)), params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 

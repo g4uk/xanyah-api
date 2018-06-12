@@ -13,13 +13,13 @@ RSpec.describe 'InventoryVariants', type: :request do
       create(:inventory_variant,
              variant:   create(:variant, product: create(:product, store: store)),
              inventory: create(:inventory, store: store, locked_at: nil))
-      get inventory_variants_path, headers: user.create_new_auth_token
+      get inventory_variants_path, params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(1)
     end
 
     it 'return empty if !membership' do
-      get inventory_variants_path, headers: create(:user).create_new_auth_token
+      get inventory_variants_path, params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(0)
     end
@@ -35,13 +35,13 @@ RSpec.describe 'InventoryVariants', type: :request do
       inventory_variant = create(:inventory_variant,
                                  variant:   create(:variant, product: create(:product, store: store)),
                                  inventory: create(:inventory, store: store, locked_at: nil))
-      get inventory_variant_path(inventory_variant), headers: user.create_new_auth_token
+      get inventory_variant_path(inventory_variant), params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)['id']).to be_present
     end
 
     it 'returns 401 if !membership' do
-      get inventory_variant_path(create(:inventory_variant)), headers: create(:user).create_new_auth_token
+      get inventory_variant_path(create(:inventory_variant)), params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 
@@ -58,7 +58,7 @@ RSpec.describe 'InventoryVariants', type: :request do
                                  variant:   create(:variant, product: create(:product, store: store)),
                                  inventory: create(:inventory, store: store, locked_at: nil))
       get "/inventory_variants/#{inventory_variant.inventory_id}/#{inventory_variant.variant_id}",
-          headers: user.create_new_auth_token
+          params: {headers: user.create_new_auth_token}
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)['id']).to be_present
     end
@@ -66,7 +66,7 @@ RSpec.describe 'InventoryVariants', type: :request do
     it 'returns 401 if !membership' do
       inventory_variant = create(:inventory_variant)
       get "/inventory_variants/#{inventory_variant.inventory_id}/#{inventory_variant.variant_id}",
-          headers: create(:user).create_new_auth_token
+          params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 
@@ -93,7 +93,7 @@ RSpec.describe 'InventoryVariants', type: :request do
     end
 
     it 'returns 401 if !membership' do
-      patch inventory_variant_path(create(:inventory_variant)), headers: create(:user).create_new_auth_token
+      patch inventory_variant_path(create(:inventory_variant)), params: {headers: create(:user).create_new_auth_token}
       expect(response).to have_http_status(:unauthorized)
     end
 
@@ -108,12 +108,13 @@ RSpec.describe 'InventoryVariants', type: :request do
         inventory_variant = create(:inventory_variant,
                                    variant:   create(:variant, product: create(:product, store: store)),
                                    inventory: create(:inventory, store: store, locked_at: nil))
-        delete inventory_variant_path(inventory_variant), headers: store_membership.user.create_new_auth_token
+        delete inventory_variant_path(inventory_variant), params: {headers: store_membership.user.create_new_auth_token}
         expect(response).to have_http_status(:no_content)
       end
 
       it 'returns 401 if !membership' do
-        delete inventory_variant_path(create(:inventory_variant)), headers: create(:user).create_new_auth_token
+        delete inventory_variant_path(create(:inventory_variant)),
+               params: {headers: create(:user).create_new_auth_token}
         expect(response).to have_http_status(:unauthorized)
         expect(JSON.parse(response.body)).to have_key('errors')
       end
